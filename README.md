@@ -12,36 +12,43 @@ formally verified. As its name suggests, **don't use this in production**!
 
 ## Gas savings
 
+If we use Remix and `ethereumjs-vm` to run each function, their reported
+execution gas cost is as follows:
+
 | Operation | SafeMath gas cost | UnsafeMaths gas cost | Savings | Notes |
 |-|-|-|-|-|
-| `add(a, b)` | 3323 | 3159 | 164 |  |
-| `sub(a, b)` | 3397 | 3222 | 175 |  |
-| `mul(a, b)` | 3496 | 3306 | 190 |  |
+| `add(a, b)` | 281 | 117 | 164 | |
+| `sub(a, b)` | 311 | 136 | 175 | |
+| `mul(a, b)` | 388 | 198 | 190 | |
+| `mul(a, b)` | 339 | 156 | 183 | `a == 0` |
+| `div(a, b)` | 320 | 182 | 138 | |
+
+I also benchmarked each SafeMath and UnsafeMath function using Ganache, and
+found the same gas savings per function:
+
+| Operation | SafeMath gas cost | UnsafeMaths gas cost | Savings | Notes |
+|-|-|-|-|-|
+| `add(a, b)` | 3323 | 3159 | 164 | |
+| `sub(a, b)` | 3397 | 3222 | 175 | |
+| `mul(a, b)` | 3496 | 3306 | 190 | |
 | `mul(a, b)` | 3435 | 3252 | 183 | `a == 0`, so both contracts return 0 immediately |
-| `div(a, b)` | 3384 | 3246 | 138 |  |
+| `div(a, b)` | 3384 | 3246 | 138 | |
 
 Note that the above gas costs exclude the base gas cost of 21000, and include
 overhead which comes from using a wrapper contract to call an external
-function. Furthermore, the SafeMath contract was compiled with the `--optimize`
-flag. If we use `ethereumjs-vm` to run each function, however,
-their gas consumption is as follows:
+function.
 
-| Operation | UnsafeMath gas cost | Notes |
-|-|-|-|
-| `add(a, b)` | 117 |  |
-| `sub(a, b)` | 136 |  |
-| `mul(a, b)` | 198 |  |
-| `mul(a, b)` | 156 | `a == 0` |
-| `div(a, b)` | 182 |  |
+In both benchmarks, the SafeMath contract was compiled with optimisation enabled.
 
 ## Getting started
 
-First, clone this repository and install dependencies:
+First, clone this repository, install dependencies, and build the source code:
 
 ```bash
 git clone git@github.com:weijiekoh/UnsafeMaths.git &&
 cd UnsafeMaths &&
-npm i
+npm i &&
+npm run build
 ```
 
 Next, compile the contracts. You need `solc` v0.6x either in your `$PATH` or

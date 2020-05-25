@@ -9,6 +9,7 @@
         "test-gasBenchmarks": "jest GasBenchmarks.test.ts",
         "test-gasBenchmarks-debug": "node --inspect-brk ./node_modules/.bin/jest GasBenchmarks.test.ts",
         "watch": "tsc --watch",
+        "build": "tsc",
         "ganache": "ganache-cli -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'"
     },
     "repository": {
