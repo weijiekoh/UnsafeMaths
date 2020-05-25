@@ -21,7 +21,7 @@ execution gas cost is as follows:
 | `sub(a, b)` | 311 | 136 | 175 | |
 | `mul(a, b)` | 388 | 198 | 190 | |
 | `mul(a, b)` | 339 | 156 | 183 | `a == 0` |
-| `div(a, b)` | 320 | 182 | 138 | |
+| `div(a, b)` | 320 | 179 | 141 | |
 | `mod(a, b)` | 446 | 201 | 245 | |
 
 I also benchmarked each SafeMath and UnsafeMath function using Ganache, and
@@ -33,8 +33,8 @@ found the same gas savings per function, except for `mod()`:
 | `sub(a, b)` | 3397 | 3222 | 175 | |
 | `mul(a, b)` | 3496 | 3306 | 190 | |
 | `mul(a, b)` | 3435 | 3252 | 183 | `a == 0`, so both contracts return 0 immediately |
-| `div(a, b)` | 3384 | 3246 | 138 | |
-| `mod(a, b)` | 3505 | 3334 | 171 | |
+| `div(a, b)` | 3384 | 3243 | 141 | |
+| `mod(a, b)` | 3505 | 3331 | 174 | |
 
 Note that the above gas costs exclude the base gas cost of 21000, and include
 overhead which comes from using a wrapper contract to call an external
