@@ -22,7 +22,7 @@ execution gas cost is as follows:
 | `mul(a, b)` | 388 | 198 | 190 | |
 | `mul(a, b)` | 339 | 156 | 183 | `a == 0` |
 | `div(a, b)` | 320 | 182 | 138 | |
-| `div(a, b)` | 446 | 204 | 242 | |
+| `mod(a, b)` | 446 | 201 | 245 | |
 
 I also benchmarked each SafeMath and UnsafeMath function using Ganache, and
 found the same gas savings per function, except for `mod()`:
