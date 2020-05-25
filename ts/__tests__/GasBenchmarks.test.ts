@@ -195,4 +195,37 @@ describe('UnsafeMaths', () => {
             }
         })
     })
+
+    describe('mod', () => {
+        let regularGas
+        it('should work for valid inputs', async () => {
+            const a = 6
+            const b = 3
+            const usmTx = await usmWrapperContract.mod(a, b)
+            const usmReceipt = await usmTx.wait()
+            regularGas = usmReceipt.gasUsed
+
+            const smTx = await smWrapperContract.mod(a, b)
+            const smReceipt = await smTx.wait()
+            console.log(
+                'SafeMaths.mod() minus base gas cost:',
+                smReceipt.gasUsed - BASE_GAS, 'gas',
+                '\nUnsafeMathsWrapper.mod() minus base gas cost:', 
+                usmReceipt.gasUsed - BASE_GAS, 'gas',
+                '\nGas savings:', (smReceipt.gasUsed - usmReceipt.gasUsed).toString(), 'gas',
+            )
+        })
+
+        it('should revert if b == 0', async () => {
+            expect.assertions(1)
+            const a = 5
+            const b = 0
+
+            try {
+                await usmWrapperContract.mod(a, b)
+            } catch {
+                expect(true).toBeTruthy()
+            }
+        })
+    })
 })

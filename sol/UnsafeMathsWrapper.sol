@@ -6,6 +6,7 @@ interface UnsafeMaths {
     function sub(uint256 a, uint256 b) external pure returns (uint256);
     function mul(uint256 a, uint256 b) external pure returns (uint256);
     function div(uint256 a, uint256 b) external pure returns (uint256);
+    function mod(uint256 a, uint256 b) external pure returns (uint256);
 }
 
 contract UnsafeMathsWrapper {
@@ -29,5 +30,9 @@ contract UnsafeMathsWrapper {
 
     function div(uint256 a, uint256 b) public returns (uint256) {
         return unsafeMaths.div(a, b);
+    }
+
+    function mod(uint256 a, uint256 b) public returns (uint256) {
+        return unsafeMaths.mod(a, b);
     }
 }

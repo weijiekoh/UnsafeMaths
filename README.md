@@ -1,7 +1,7 @@
 # UnsafeMaths: a gas-optimised arithmetic library for Ethereum
 
 This is OpenZepplin's
-[SafeMath.sol](https://github.com/ConsenSys/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol),
+[SafeMath.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/math/SafeMath.sol),
 rewritten in Aztec Protocol's [Huff](https://github.com/AztecProtocol/huff/)
 domain-specific language for the Ethereum Virtual Machine.
 
@@ -22,9 +22,10 @@ execution gas cost is as follows:
 | `mul(a, b)` | 388 | 198 | 190 | |
 | `mul(a, b)` | 339 | 156 | 183 | `a == 0` |
 | `div(a, b)` | 320 | 182 | 138 | |
+| `div(a, b)` | 446 | 204 | 242 | |
 
 I also benchmarked each SafeMath and UnsafeMath function using Ganache, and
-found the same gas savings per function:
+found the same gas savings per function, except for `mod()`:
 
 | Operation | SafeMath gas cost | UnsafeMaths gas cost | Savings | Notes |
 |-|-|-|-|-|
@@ -33,6 +34,7 @@ found the same gas savings per function:
 | `mul(a, b)` | 3496 | 3306 | 190 | |
 | `mul(a, b)` | 3435 | 3252 | 183 | `a == 0`, so both contracts return 0 immediately |
 | `div(a, b)` | 3384 | 3246 | 138 | |
+| `mod(a, b)` | 3505 | 3334 | 171 | |
 
 Note that the above gas costs exclude the base gas cost of 21000, and include
 overhead which comes from using a wrapper contract to call an external

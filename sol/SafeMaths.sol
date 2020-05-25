@@ -93,7 +93,8 @@ contract SafeMath {
      * Requirements:
      * - The divisor cannot be zero.
      */
-    function mod(uint256 a, uint256 b) internal returns (uint256) {
-        return mod(a, b);
+    function mod(uint256 a, uint256 b) public returns (uint256) {
+        require(b != 0);
+        return a % b;
     }
 }

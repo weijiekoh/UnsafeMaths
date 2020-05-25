@@ -214,4 +214,43 @@ describe('UnsafeMaths', () => {
         })
     })
 
+    describe('mod', () => {
+        it('should work for valid inputs', async () => {
+            const a = BigInt(6)
+            const b = BigInt(3)
+
+            const callData = [
+                { index: 0, value: 0xf43f523a, len: 4 },
+                { index: 4, value: a, len: 32 },
+                { index: 36, value: b, len: 32 },
+            ]
+            const data = await main(vm, mainMacro, [], [], callData, 0, 0)
+            const returnValue = BigInt('0x' + data.returnValue.toString('hex'))
+
+            console.log('Return value:', returnValue)
+            console.log('Gas used for mod():', data.gas)
+
+            printStack(data)
+
+            expect(returnValue).toEqual(a % b)
+        })
+
+        it('should revert instead of modulo by 0', async () => {
+            const a = BigInt(5)
+            const b = BigInt(0)
+            const callData = [
+                { index: 0, value: 0xf43f523a, len: 4 },
+                { index: 4, value: a, len: 32 },
+                { index: 36, value: b, len: 32 },
+            ]
+
+            expect.assertions(1)
+            try {
+                await main(vm, 'UnsafeMaths__MAIN', [], [], callData, 0, 0)
+            } catch {
+                expect(true).toBeTruthy()
+            }
+        })
+    })
+
 })
