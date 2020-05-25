@@ -1,0 +1,164 @@
+template <error_location>
+#define macro UTILS__NOT_PAYABLE = takes(0) returns(0) {
+	callvalue <error_location> jumpi
+}
+
+template <add_param, sub_param, mul_param, div_param, error_location>
+#define macro FUNCTION_SIGNATURE = takes(0) returns(0) {
+	0x00 calldataload 224 shr // function signature
+	dup1 0x771602f7 eq <add_param> jumpi
+	dup1 0xb67d77c5 eq <sub_param> jumpi
+	dup1 0xc8a4ac9c eq <mul_param> jumpi
+	dup1 0xa391c15b eq <div_param> jumpi
+	UTILS__NOT_PAYABLE<error_location>()
+	0x00 0x00 return
+}
+
+template <error_location>
+#define macro UnsafeMaths__ADD = takes(0) returns(0) {
+	// mstore writes to memory
+    0x04 calldataload 0x00 mstore
+	0x24 calldataload 0x20 mstore
+
+	// mload reads from memory and writes to the stack
+	0x00 mload // stack: a
+	0x20 mload // stack: a, b
+	dup2       // stack: a, b, a
+	add        // stack: a, a+b
+	dup2       // stack: a, a+b, a
+	dup2       // stack: a, a+b, a, a+b
+	lt         // stack: a, a+b, a+b < a
+
+	// revert if (a+b < a) == 1
+	<error_location> jumpi // stack: a, a+b
+
+	0x00 mstore // stack: a
+
+	// memory: a+b
+
+	// return reads a+b from memory
+	0x20 0x00 return
+}
+
+template <error_location>
+#define macro UnsafeMaths__SUB = takes(0) returns(0) {
+	// mstore writes to memory
+	0x24 calldataload 0x00 mstore
+    0x04 calldataload 0x20 mstore
+
+	// mload reads from memory and writes to the stack
+	0x00 mload // stack: b
+	0x20 mload // stack: b, a
+
+    dup2       // stack: b, a, b
+    dup2       // stack: b, a, b, a
+
+    lt         // stack: b, a, b<a
+
+    // revert if b<a
+    <error_location> jumpi // stack: a, b
+
+    sub        // stack: a-b
+
+	0x00 mstore // memory: a-b
+
+	// return reads a-b from memory
+	0x20 0x00 return
+}
+
+template <return_zero, error_location>
+#define macro UnsafeMaths__MUL = takes(0) returns(0) {
+	// mstore writes to memory
+	0x24 calldataload 0x00 mstore
+    0x04 calldataload 0x20 mstore
+	// mload reads from memory and writes to the stack
+	0x00 mload // stack: b
+	0x20 mload // stack: b, a
+
+    dup1       // stack: b, a, a
+    iszero     // stack: b, a, a==0
+	<return_zero> jumpi // stack: b, a
+
+    dup2       // stack: b, a, b
+    dup2 dup2  // stack: b, a, b, a, b
+    dup2       // stack: b, a, b, a, b, a
+    mul        // stack: b, a, b, a, a*b
+    div        // stack: b, a, b, a*b/a
+    eq         // stack: b, a, a*b/a == b
+    iszero
+	<error_location> jumpi // stack: b, a
+    mul
+
+	0x00 mstore // memory: a
+
+	// return reads a-b from memory
+	0x20 0x00 return
+}
+
+template <error_location>
+#define macro UnsafeMaths__DIV = takes(0) returns(0) {
+	// mstore writes to memory
+	0x04 calldataload 0x00 mstore
+    0x24 calldataload 0x20 mstore
+	// mload reads from memory and writes to the stack
+	0x00 mload // stack: a
+	0x20 mload // stack: a, b
+
+    dup1       // stack: a, b, b
+
+    iszero     // stack: a, b, b==0
+
+    // revert if b == 0
+    <error_location> jumpi // stack: a, b
+
+    swap1       // stack: b, a
+
+    div        // stack: a/b
+
+	0x00 mstore // memory: a/b
+
+	// return reads a-b from memory
+	0x20 0x00 return
+}
+
+
+#define macro UnsafeMaths__MAIN = takes(0) returns(0) {
+
+	FUNCTION_SIGNATURE<
+		add_param,
+		sub_param,
+        mul_param,
+        div_param,
+		throw_error
+	>()
+
+	add_param:
+		UnsafeMaths__ADD<throw_error>()
+
+    sub_param:
+		UnsafeMaths__SUB<throw_error>()
+
+    mul_param:
+		UnsafeMaths__MUL<return_zero, throw_error>()
+
+    div_param:
+		UnsafeMaths__DIV<throw_error>()
+
+    return_zero:
+        0x00 0x00 mstore
+        0x20 0x00 return
+
+	throw_error:
+		0x00 0x00 revert
+
+}
+
+#define macro MAIN__CONSTRUCTOR_SHALLOW = takes(0) returns(0) {
+    __codesize(UnsafeMaths__MAIN)
+    dup1 0x01 0x00 codecopy 0x00 return
+}
+
+#define macro MAIN__CONSTRUCTOR = takes(0) returns(0) {
+    __codesize(UnsafeMaths__MAIN)
+    dup1 __codesize(MAIN__CONSTRUCTOR_SHALLOW) 0x00 codecopy 0x00 return
+}
