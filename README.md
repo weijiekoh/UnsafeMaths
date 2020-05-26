@@ -19,7 +19,7 @@ execution gas cost is as follows:
 |-|-|-|-|-|
 | `add(a, b)` | 281 | 117 | 164 | |
 | `sub(a, b)` | 311 | 136 | 175 | |
-| `mul(a, b)` | 388 | 198 | 190 | |
+| `mul(a, b)` | 388 | 196 | 192 | |
 | `mul(a, b)` | 339 | 156 | 183 | `a == 0`, so return 0 immediately |
 | `div(a, b)` | 320 | 179 | 141 | |
 | `mod(a, b)` | 446 | 201 | 245 | |
@@ -31,7 +31,7 @@ found the same gas savings per function, except for `mod()`:
 |-|-|-|-|-|
 | `add(a, b)` | 3323 | 3159 | 164 | |
 | `sub(a, b)` | 3397 | 3222 | 175 | |
-| `mul(a, b)` | 3496 | 3306 | 190 | |
+| `mul(a, b)` | 3496 | 3304 | 192 | |
 | `mul(a, b)` | 3435 | 3252 | 183 | `a == 0` |
 | `div(a, b)` | 3384 | 3243 | 141 | |
 | `mod(a, b)` | 3505 | 3331 | 174 | |
