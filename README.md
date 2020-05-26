@@ -90,3 +90,7 @@ npm run compile
 ```
 
 UnsafeMaths' contract ABI is the same as that of `SafeMath.sol`.
+
+## Credits
+
+Many thanks to @wolflo0 for feedback and comments.
