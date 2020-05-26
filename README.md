@@ -53,7 +53,7 @@ npm i &&
 npm run build
 ```
 
-Next, compile the contracts. You need `solc` v0.6x either in your `$PATH` or
+Next, compile the contracts. You need `solc` v0.6.x either in your `$PATH` or
 somewhere on your disk. 
 
 ```bash

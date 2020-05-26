@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as ethers from 'ethers'
+import { compile } from '../compile'
 const { parser } = require('@aztec/huff')
 const { Runtime, getNewVM } = require('@aztec/huff').Runtime
 
@@ -14,8 +15,6 @@ const filename = 'UnsafeMaths.huff'
 const mainMacro = 'UnsafeMaths__MAIN'
 
 describe('UnsafeMaths', () => {
-    let main
-    let vm
     let provider
     let smContract
     let smWrapperContract
@@ -23,20 +22,6 @@ describe('UnsafeMaths', () => {
     let usmWrapperContract
 
     beforeAll(async () => {
-        main = new Runtime('../../huff/' + filename, __dirname)
-        vm = getNewVM()
-        const { inputMap, macros, jumptables } = parser.parseFile(filename, './huff/')
-        const c = parser.processMacro(mainMacro, 0, [], macros, inputMap, jumptables)
-
-        const parsedConstructor = parser.parseFile(filename, './huff/')
-        const constructorMacro = parser.processMacro(
-            'MAIN__CONSTRUCTOR',
-            0,
-            [],
-            parsedConstructor.macros,
-            parsedConstructor.inputMap,
-            parsedConstructor.jumptables,
-        )
 
         // Deploy bytecode
         provider = new ethers.providers.JsonRpcProvider('http://localhost:8545')
@@ -65,9 +50,10 @@ describe('UnsafeMaths', () => {
         smWrapperContract = await smWrapperFactory.deploy(smContract.address, {})
         console.log('SafeMathsWrapper deployed at:', smWrapperContract.address)
 
+        const usmBytecode = compile()
         const usmFactory = new ethers.ContractFactory(
             abi,
-            constructorMacro.data.bytecode + c.data.bytecode,
+            usmBytecode,
             wallet,
         )
         usmContract = await usmFactory.deploy()
@@ -143,7 +129,7 @@ describe('UnsafeMaths', () => {
             )
         })
 
-        it('should use even less gas if a == 0', async () => {
+        it('should use less gas if a == 0', async () => {
             const a = 0
             const b = 1
             const usmTx = await usmWrapperContract.mul(a, b)
